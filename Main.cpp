@@ -104,7 +104,7 @@ public:
 		}
 		int l = mbline.length();
 		if (l > 0 || c != EOF) {
-			wchar_t *buf = new wchar_t[l + 1];
+			tjs_char *buf = new tjs_char[l + 1];
 			l = MultiByteToWideChar(codepage, 0,
 									mbline.data(),
 									mbline.length(),
