@@ -28,16 +28,16 @@ public:
 
 class IFileStorage : public IFile {
 
-	IStream *in;
+	iTJSBinaryStream *in;
 	char buf[8192];
-	ULONG pos;
-	ULONG len;
+	tjs_uint pos;
+	tjs_uint len;
 	bool eofFlag;
 	int codepage;
 	
 public:
 	IFileStorage(tTJSVariantString *filename, int codepage) : codepage(codepage) {
-		in = TVPCreateIStream(filename, TJS_BS_READ);
+		in = TVPCreateStream(filename, TJS_BS_READ);
 		if(!in) {
 			TVPThrowExceptionMessage((ttstr(TJS_W("cannot open : ")) + *filename).c_str());
 		}
@@ -48,7 +48,7 @@ public:
 
 	~IFileStorage() {
 		if (in) {
-			in->Release();
+			in->Destruct();
 			in = NULL;
 		}
 	}
@@ -61,12 +61,8 @@ public:
 				return EOF;
 			} else {
 				pos = 0;
-				if (in->Read(buf, sizeof buf, &len) == S_OK) {
-					eofFlag = len < sizeof buf;
-				} else {
-					eofFlag = true;
-					len = 0;
-				}
+				len = in->Read(buf, sizeof buf);
+				eofFlag = len < sizeof buf;
 				return getc();
 			}
 		}
